@@ -73,8 +73,6 @@ var createTaskEl = function(taskDataObj) {
   // create list item
   var listItemEl = document.createElement("li");
   listItemEl.className = "task-item";
-
-  // add task id as a custom attribute
   listItemEl.setAttribute("data-task-id", taskIdCounter);
   listItemEl.setAttribute("draggable", "true");
 
@@ -87,17 +85,31 @@ var createTaskEl = function(taskDataObj) {
   var taskActionsEl = createTaskActions(taskIdCounter);
   listItemEl.appendChild(taskActionsEl);
 
+  switch (taskDataObj.status) {
+    case "to do":
+      taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 0;
+      tasksToDoEl.append(listItemEl);
+      break;
+    case "in progress":
+      taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 1;
+      tasksInProgressEl.append(listItemEl);
+      break;
+    case "completed":
+      taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 2;
+      tasksCompletedEl.append(listItemEl);
+      break;
+    default:
+      console.log("Something went wrong!");
+  }
+
   taskDataObj.id = taskIdCounter;
 
   tasks.push(taskDataObj);
 
-  // add entire list item to list
-  tasksToDoEl.appendChild(listItemEl);
+  saveTasks();
 
   // increase task counter for next unique id
   taskIdCounter++;
-
-  saveTasks()
 };
 
 var createTaskActions = function(taskId) {
@@ -308,3 +320,5 @@ pageContentEl.addEventListener("dragstart", dragTaskHandler);
 pageContentEl.addEventListener("dragover", dropZoneDragHandler);
 pageContentEl.addEventListener("drop", dropTaskhandler);
 pageContentEl.addEventListener("dragleave", dragLeaveHandler);
+
+loadTasks()
